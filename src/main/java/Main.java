@@ -4,7 +4,6 @@ import com.textrazor.annotations.AnalyzedText;
 import com.textrazor.annotations.Entity;
 import org.apache.commons.configuration.ConfigurationException;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -23,9 +22,7 @@ public class Main {
 		client.addExtractor("words");
 		client.addExtractor("entities");
 
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		File file = new File(classloader.getResource("twits.out").getFile());
-
+		// TODO Perhaps use threads to send requests in parallel
 		TwitsIterator iter = new TwitsIterator("twits.txt", MAX_COUNT);
 		FreqCounter fc = new FreqCounter();
 
@@ -44,6 +41,7 @@ public class Main {
 			System.out.println(line);
 			System.out.println();
 			if (response.getResponse().getEntities() != null) {
+				// TODO Check why textrazor returns the same entity multiple times in some cases
 				for (Entity entity : response.getResponse().getEntities()) {
 					System.out.println("Matched Entity: " + entity.getEntityId());
 					fc.increment(entity.getEntityId());
@@ -70,7 +68,7 @@ public class Main {
 
 
 		for (Map.Entry<String, Integer> entry : fc.getTop(20)) {
-			System.out.println(entry.getKey() + " : " + entry.getValue() );
+			System.out.println(entry.getKey() + " : " + entry.getValue());
 		}
 
 		System.out.println("==============================================");
